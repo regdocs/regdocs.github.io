@@ -1,0 +1,76 @@
+<h2 class="sr-only">Stacked bar chart of backup failures by error type across 7 days (D1–D7)</h2>
+<style>
+.legend-wrap { display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:12px; font-size:12px; color:var(--color-text-secondary); }
+.legend-item { display:flex; align-items:center; gap:5px; cursor:pointer; }
+.legend-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+.legend-item.hidden { opacity:0.35; }
+</style>
+<div class="legend-wrap" id="legend"></div>
+<div style="position:relative;width:100%;height:420px;">
+  <canvas id="chart" role="img" aria-label="Stacked bar chart showing backup failures per day D1 through D7, broken down by error type. Largest categories: Agent disk full (366 total), DB/config corruption (245), Bench not exist (96).">Backup failures by error type across 7 days. Top errors: Agent disk full 366, DB corruption 245, Bench not exist 96, UNKNOWN 95, No space on disk 84.</canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const raw = [
+  {label:"Agent: disk full",          data:[1,5,34,47,266,10,3],  color:"#E24B4A"},
+  {label:"DB/config corrupted",        data:[36,41,33,41,29,31,34], color:"#D85A30"},
+  {label:"[BUG] Bench not exist",      data:[14,13,14,14,14,14,13], color:"#7F77DD"},
+  {label:"UNKNOWN",                    data:[17,15,21,10,9,13,10],  color:"#888780"},
+  {label:"No space on disk",           data:[6,28,21,10,4,10,5],   color:"#BA7517"},
+  {label:"Docker non-zero exit",       data:[3,13,5,12,23,8,1],    color:"#D4537E"},
+  {label:"tar: permission denied",     data:[7,7,7,7,7,7,7],       color:"#AFA9EC"},
+  {label:"Table crashed (144)",        data:[7,7,7,7,7,7,7],       color:"#5DCAA5"},
+  {label:"tar: private/files missing", data:[7,6,7,6,7,6,6],       color:"#97C459"},
+  {label:"[botocore] S3 failure",      data:[35,0,2,4,1,1,0],      color:"#85B7EB"},
+  {label:"Can't connect to DB",        data:[6,3,7,4,7,3,2],       color:"#F0997B"},
+  {label:"Site does not exist",        data:[1,2,9,6,2,1,1],       color:"#FAC775"},
+  {label:"FileNotFoundError",          data:[3,5,2,1,2,5,1],       color:"#9FE1CB"},
+  {label:"Too many connections",       data:[1,4,1,2,2,3,0],       color:"#F4C0D1"},
+  {label:"Missing app",               data:[0,0,0,0,7,0,0],       color:"#CECBF6"},
+];
+
+const hidden = new Set();
+const datasets = raw.map(r => ({
+  label: r.label,
+  data: r.data,
+  backgroundColor: r.color,
+  borderWidth: 0,
+  borderRadius: 2,
+}));
+
+const chart = new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: { labels: ['D1','D2','D3','D4','D5','D6','D7'], datasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          footer: (items) => 'Total: ' + items.reduce((s,i) => s + i.parsed.y, 0)
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { color: '#888780' } },
+      y: { stacked: true, grid: { color: 'rgba(136,135,128,0.15)' }, ticks: { color: '#888780' }, border: { display: false } }
+    }
+  }
+});
+
+const legendEl = document.getElementById('legend');
+raw.forEach((r, i) => {
+  const item = document.createElement('span');
+  item.className = 'legend-item';
+  item.innerHTML = `<span class="legend-swatch" style="background:${r.color}"></span>${r.label}`;
+  item.addEventListener('click', () => {
+    const meta = chart.getDatasetMeta(i);
+    if (hidden.has(i)) { hidden.delete(i); meta.hidden = false; item.classList.remove('hidden'); }
+    else { hidden.add(i); meta.hidden = true; item.classList.add('hidden'); }
+    chart.update();
+  });
+  legendEl.appendChild(item);
+});
+</script>
