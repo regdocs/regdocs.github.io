@@ -1,0 +1,66 @@
+
+<h2 class="sr-only">Stacked bar chart of backup failure types across days D1 to D7</h2>
+
+<div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0 1.5rem; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30"></span>DB/config corrupted</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD"></span>Can't connect to DB</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#888780"></span>Unknown</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E"></span>Table crashed</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#EF9F27"></span>No space on disk</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#639922"></span>Bench not exist</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7F77DD"></span>Permission denied</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#5DCAA5"></span>Docker non-zero</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span>Missing app</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517"></span>Other</span>
+</div>
+
+<div style="position:relative;width:100%;height:420px;">
+  <canvas id="bc" role="img" aria-label="Stacked bar chart showing backup failure counts by error type for days D1 through D7. DB/config corrupted is consistently the largest category each day.">Backup failures by type per day D1–D7.</canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['D1','D2','D3','D4','D5','D6','D7'];
+const datasets = [
+  { label: 'DB/config corrupted', data: [38,55,52,43,59,39,55], backgroundColor: '#D85A30' },
+  { label: "Can't connect to DB",  data: [3,0,3,16,41,55,6],   backgroundColor: '#378ADD' },
+  { label: 'Unknown',              data: [9,12,25,18,20,11,13], backgroundColor: '#888780' },
+  { label: 'Table crashed',        data: [7,7,7,7,7,13,14],     backgroundColor: '#D4537E' },
+  { label: 'No space on disk',     data: [8,14,6,9,7,5,9],      backgroundColor: '#EF9F27' },
+  { label: 'Bench not exist',      data: [14,8,7,7,7,7,7],      backgroundColor: '#639922' },
+  { label: 'Permission denied',    data: [7,7,7,7,7,7,7],       backgroundColor: '#7F77DD' },
+  { label: 'Docker non-zero',      data: [5,6,3,6,7,5,6],       backgroundColor: '#5DCAA5' },
+  { label: 'Missing app',          data: [0,0,0,7,7,7,7],       backgroundColor: '#1D9E75' },
+  { label: 'Other',                data: [7,11,4,11,15,10,13],  backgroundColor: '#BA7517' },
+];
+
+new Chart(document.getElementById('bc'), {
+  type: 'bar',
+  data: { labels, datasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          footer: (items) => 'Total: ' + items.reduce((s,i) => s + i.parsed.y, 0)
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { display: false },
+        ticks: { color: '#888780' }
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        grid: { color: 'rgba(136,135,128,0.15)' },
+        ticks: { color: '#888780' }
+      }
+    }
+  }
+});
+</script>
