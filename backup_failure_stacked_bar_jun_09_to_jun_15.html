@@ -1,0 +1,74 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>* { font-family: 'Inter', sans-serif; }</style>
+
+<h2 class="sr-only">Stacked bar chart of backup failure types across days D1 to D7</h2>
+
+<div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0 1.5rem; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#D85A30"></span>DB/config corrupted</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#888780"></span>Unknown</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E"></span>Table crashed</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#EF9F27"></span>Agent: disk/DB full</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD"></span>Can't connect to DB</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#639922"></span>Bench not exist</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span>Missing app</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7F77DD"></span>Permission denied</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#FA7722"></span>No space on disk</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517"></span>Too many connections</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#5DCAA5"></span>Other</span>
+</div>
+
+<div style="position:relative;width:100%;height:420px;">
+  <canvas id="bc" role="img" aria-label="Stacked bar chart showing backup failure counts by error type for days D1 through D7. DB/config corrupted is the largest category each day.">Backup failures by type per day D1–D7.</canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['D1','D2','D3','D4','D5','D6','D7'];
+const datasets = [
+  { label: 'DB/config corrupted', data: [33,50,41,40,35,32,17], backgroundColor: '#D85A30' },
+  { label: 'Unknown',             data: [14,11,11, 9,17,22,20], backgroundColor: '#888780' },
+  { label: 'Table crashed',       data: [14,14,15, 7, 7, 7, 0], backgroundColor: '#D4537E' },
+  { label: 'Agent: disk/DB full', data: [ 3,20,15, 6, 1,15, 0], backgroundColor: '#EF9F27' },
+  { label: "Can't connect to DB", data: [ 3, 5, 3, 9, 7,16,14], backgroundColor: '#378ADD' },
+  { label: 'Bench not exist',     data: [ 7, 8, 7, 7, 7, 7, 7], backgroundColor: '#639922' },
+  { label: 'Missing app',         data: [ 7, 7, 7, 7, 7, 7, 7], backgroundColor: '#1D9E75' },
+  { label: 'Permission denied',   data: [ 7, 7, 7, 7, 7, 6, 1], backgroundColor: '#7F77DD' },
+  { label: 'No space on disk',    data: [13,12, 5, 8, 1, 2, 0], backgroundColor: '#FA7722' },
+  { label: 'Too many connections',data: [ 0, 0, 0, 0, 0,37, 0], backgroundColor: '#BA7517' },
+  { label: 'Other',               data: [ 8,14,10, 8,15, 7, 5], backgroundColor: '#5DCAA5' },
+];
+
+new Chart(document.getElementById('bc'), {
+  type: 'bar',
+  data: { labels, datasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        titleFont: { family: 'Inter', size: 13, weight: '500' },
+        bodyFont: { family: 'Inter', size: 12 },
+        footerFont: { family: 'Inter', size: 12, weight: '500' },
+        callbacks: {
+          footer: (items) => 'Total: ' + items.reduce((s,i) => s + i.parsed.y, 0)
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { display: false },
+        ticks: { color: '#888780', font: { family: 'Inter', size: 12 } }
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        grid: { color: 'rgba(136,135,128,0.15)' },
+        ticks: { color: '#888780', font: { family: 'Inter', size: 12 } }
+      }
+    }
+  }
+});
+</script>
