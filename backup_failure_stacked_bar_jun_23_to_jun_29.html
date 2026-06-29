@@ -1,0 +1,66 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>* { font-family: 'Inter', sans-serif; }</style>
+
+<div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0 1.5rem; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#888780"></span>Unknown</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E"></span>Table crashed</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD"></span>Can't connect to DB</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#639922"></span>Bench not exist</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75"></span>Missing app</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#EF9F27"></span>No space on disk</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#5DCAA5"></span>S3 connection failure</span>
+  <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517"></span>Other</span>
+</div>
+
+<div style="position:relative;width:100%;height:420px;">
+  <canvas id="bc"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['Jun 23','Jun 24','Jun 25','Jun 26','Jun 27','Jun 28','Jun 29'];
+const datasets = [
+  { label: 'Unknown',              data: [18, 18, 22, 25, 19, 19, 43], backgroundColor: '#888780' },
+  { label: 'Table crashed',        data: [21, 21, 21, 21, 21, 21,  7], backgroundColor: '#D4537E' },
+  { label: "Can't connect to DB",  data: [27,  7, 26,  6, 16, 21,  7], backgroundColor: '#378ADD' },
+  { label: 'Bench not exist',      data: [ 7,  7,  7, 21, 21, 21, 21], backgroundColor: '#639922' },
+  { label: 'Missing app',          data: [ 7, 14, 14, 14, 14, 14, 13], backgroundColor: '#1D9E75' },
+  { label: 'No space on disk',     data: [ 0,  9,  8, 20, 11, 17,  8], backgroundColor: '#EF9F27' },
+  { label: 'S3 connection failure', data: [ 8,  9,  8,  4,  5,  8, 12], backgroundColor: '#5DCAA5' },
+  { label: 'Other',                data: [10, 19, 11,  8, 16,  6,  6], backgroundColor: '#BA7517' },
+];
+
+new Chart(document.getElementById('bc'), {
+  type: 'bar',
+  data: { labels, datasets },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        titleFont: { family: 'Inter', size: 13, weight: '500' },
+        bodyFont: { family: 'Inter', size: 12 },
+        footerFont: { family: 'Inter', size: 12, weight: '500' },
+        callbacks: {
+          footer: (items) => 'Total: ' + items.reduce((s,i) => s + i.parsed.y, 0)
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { display: false },
+        ticks: { color: '#888780', font: { family: 'Inter', size: 12 } }
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        grid: { color: 'rgba(136,135,128,0.15)' },
+        ticks: { color: '#888780', font: { family: 'Inter', size: 12 } }
+      }
+    }
+  }
+});
+</script>
